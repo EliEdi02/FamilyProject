@@ -1,0 +1,154 @@
+{% extends 'gallery/base.html' %}
+
+{% block title %}Tic-Tac-Toe - Family Cloud{% endblock %}
+
+{% block content %}
+    <section class="hero-card premium-hero small-hero">
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+
+        <div class="hero-grid">
+            <div class="hero-content">
+                <span class="hero-label">Spielbereich</span>
+                <h1>Tic-Tac-Toe</h1>
+                <p>
+                    Erstellt ein neues Spiel, tretet offenen Spielen bei
+                    und spielt direkt gegeneinander in eurer Family Cloud.
+                </p>
+
+                <form method="post" class="hero-actions">
+                    {% csrf_token %}
+                    <button type="submit" class="primary-button">Neues Spiel erstellen</button>
+                </form>
+            </div>
+
+            <div class="hero-side-panel">
+                <div class="stat-card">
+                    <span class="stat-label">Offene Spiele</span>
+                    <strong>{{ open_games|length }}</strong>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Laufende Spiele</span>
+                    <strong>{{ running_games|length }}</strong>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Beendete Spiele</span>
+                    <strong>{{ finished_games|length }}</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content-panel">
+        <div class="section-header">
+            <div>
+                <p class="section-kicker">Bereit zum Beitreten</p>
+                <h2>Offene Spiele</h2>
+            </div>
+        </div>
+
+        <div class="photo-grid premium-grid">
+            {% for game in open_games %}
+                <article class="photo-card premium-photo-card">
+                    <div class="photo-card-body">
+                        <div class="game-status-chip open">Offen</div>
+                        <h3>Spiel #{{ game.id }}</h3>
+                        <p>Spieler X: <strong>{{ game.player_x.username }}</strong></p>
+                        <p>Spieler O: <strong>Noch offen</strong></p>
+
+                        <div class="photo-card-footer">
+                            <a href="{% url 'tic_tac_toe_detail' game.id %}" class="primary-button">Spiel öffnen</a>
+                        </div>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="empty-state small">
+                    <h3>Keine offenen Spiele</h3>
+                    <p>Erstelle ein neues Spiel, damit jemand beitreten kann.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="content-panel">
+        <div class="section-header">
+            <div>
+                <p class="section-kicker">Aktiv</p>
+                <h2>Laufende Spiele</h2>
+            </div>
+        </div>
+
+        <div class="photo-grid premium-grid">
+            {% for game in running_games %}
+                <article class="photo-card premium-photo-card">
+                    <div class="photo-card-body">
+                        <div class="game-status-chip running">Läuft</div>
+                        <h3>Spiel #{{ game.id }}</h3>
+                        <p>X: <strong>{{ game.player_x.username }}</strong></p>
+                        <p>O: <strong>{{ game.player_o.username }}</strong></p>
+                        <p>Am Zug: <strong>{{ game.current_turn }}</strong></p>
+
+                        <div class="photo-card-footer">
+                            <a href="{% url 'tic_tac_toe_detail' game.id %}" class="card-link">Weiter spielen</a>
+                        </div>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="empty-state small">
+                    <h3>Keine laufenden Spiele</h3>
+                    <p>Im Moment spielt gerade niemand.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="content-panel">
+        <div class="section-header">
+            <div>
+                <p class="section-kicker">Archiv</p>
+                <h2>Beendete Spiele</h2>
+            </div>
+        </div>
+
+        <div class="photo-grid premium-grid">
+            {% for game in finished_games %}
+                <article class="photo-card premium-photo-card">
+                    <div class="photo-card-body">
+                        <div class="game-status-chip finished">Beendet</div>
+                        <h3>Spiel #{{ game.id }}</h3>
+                        <p>X: <strong>{{ game.player_x.username }}</strong></p>
+                        <p>
+                            O:
+                            <strong>
+                                {% if game.player_o %}
+                                    {{ game.player_o.username }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </strong>
+                        </p>
+
+                        <p>
+                            {% if game.winner == 'X' %}
+                                Gewinner: <strong>{{ game.player_x.username }}</strong>
+                            {% elif game.winner == 'O' and game.player_o %}
+                                Gewinner: <strong>{{ game.player_o.username }}</strong>
+                            {% else %}
+                                <strong>Unentschieden</strong>
+                            {% endif %}
+                        </p>
+
+                        <div class="photo-card-footer">
+                            <a href="{% url 'tic_tac_toe_detail' game.id %}" class="card-link">Spiel ansehen</a>
+                        </div>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="empty-state small">
+                    <h3>Noch keine beendeten Spiele</h3>
+                    <p>Hier erscheinen später vergangene Runden.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

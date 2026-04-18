@@ -1,0 +1,115 @@
+{% extends 'gallery/base.html' %}
+
+{% block title %}{{ photo.title }} - Family Cloud{% endblock %}
+
+{% block content %}
+    <a class="back-link" href="{% url 'home' %}">← Zurück zur Startseite</a>
+
+    <section class="detail-layout enhanced-detail-layout">
+        <div class="detail-image-card premium-detail-image-card">
+            <img src="{{ photo.image.url }}" alt="{{ photo.title }}">
+        </div>
+
+        <div class="detail-info-card premium-detail-info-card">
+            <p class="section-kicker">Bildansicht</p>
+            <h1>{{ photo.title }}</h1>
+
+            <div class="detail-meta">
+                <span>Hochgeladen von <strong>{{ photo.uploaded_by.username }}</strong></span>
+                <span>{{ photo.created_at|date:"d.m.Y H:i" }}</span>
+            </div>
+
+            {% if photo.description %}
+                <p class="detail-description">{{ photo.description }}</p>
+            {% else %}
+                <p class="detail-description muted">
+                    Für dieses Bild wurde keine Beschreibung hinterlegt.
+                </p>
+            {% endif %}
+
+            <div class="action-links">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'download_photo' photo.id %}" class="secondary-button">Bild herunterladen</a>
+                {% endif %}
+
+                {% if user == photo.uploaded_by or user.is_superuser %}
+                    <a href="{% url 'edit_photo' photo.id %}" class="primary-button">Bearbeiten</a>
+                    <a href="{% url 'delete_photo' photo.id %}" class="danger-button">Löschen</a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Weitere Bilder -->
+    <section class="content-panel">
+        <div class="section-header">
+            <div>
+                <p class="section-kicker">Weiterstöbern</p>
+                <h2>Weitere Bilder</h2>
+            </div>
+        </div>
+
+        <div class="photo-grid premium-grid">
+            {% for related in related_photos %}
+                <article class="photo-card premium-photo-card">
+                    <a href="{% url 'photo_detail' related.id %}" class="photo-image-wrap premium-image-wrap">
+                        <img src="{{ related.image.url }}" alt="{{ related.title }}">
+                        <div class="image-overlay">
+                            <span class="overlay-chip">Details ansehen</span>
+                        </div>
+                    </a>
+
+                    <div class="photo-card-body">
+                        <h3>
+                            <a href="{% url 'photo_detail' related.id %}">{{ related.title }}</a>
+                        </h3>
+
+                        <div class="photo-meta">
+                            <span>Von {{ related.uploaded_by.username }}</span>
+                            <span>{{ related.created_at|date:"d.m.Y H:i" }}</span>
+                        </div>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="empty-state small">
+                    <h3>Keine weiteren Bilder vorhanden</h3>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Kommentare -->
+    <section class="content-panel">
+        <div class="section-header">
+            <div>
+                <p class="section-kicker">Kommentare</p>
+                <h2>Austausch</h2>
+            </div>
+        </div>
+
+        {% for comment in comments %}
+            <div class="comment-box">
+                <strong>{{ comment.author.username }}</strong>
+                <p>{{ comment.text }}</p>
+                <small>{{ comment.created_at }}</small>
+            </div>
+        {% empty %}
+            <p>Keine Kommentare vorhanden.</p>
+        {% endfor %}
+    </section>
+
+    <!-- Kommentar schreiben -->
+    <section class="content-panel">
+        <h3>Kommentar schreiben</h3>
+
+        {% if user.is_authenticated %}
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Absenden</button>
+            </form>
+        {% else %}
+            <p>Du musst eingeloggt sein.</p>
+        {% endif %}
+    </section>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends 'gallery/base.html' %}
+
+{% block title %}Bild hochladen - Family Cloud{% endblock %}
+
+{% block content %}
+    <a class="back-link" href="{% url 'home' %}">← Zurück zur Startseite</a>
+
+    <section class="form-page-card upload-experience-card">
+        <div class="section-header">
+            <div>
+                <p class="section-kicker">Neuer Upload</p>
+                <h1>Ein neues Familienbild hinzufügen</h1>
+            </div>
+        </div>
+
+        <p class="page-intro">
+            Ziehe dein Bild direkt in den Upload-Bereich oder wähle es manuell aus.
+            Vor dem Hochladen bekommst du sofort eine Vorschau.
+        </p>
+
+        <form method="post" enctype="multipart/form-data" class="modern-form enhanced-form upload-form-layout">
+            {% csrf_token %}
+
+            <div class="upload-preview-layout">
+                <div class="dropzone-panel">
+                    <label for="id_image" class="custom-dropzone" id="custom-dropzone">
+                        <div class="dropzone-icon">⬆</div>
+                        <h3>Bild hierher ziehen</h3>
+                        <p>oder klicken, um eine Datei auszuwählen</p>
+                        <span class="dropzone-hint">JPG, PNG und andere Bildformate</span>
+                    </label>
+
+                    <div class="hidden-file-input">
+                        {{ form.image }}
+                    </div>
+                </div>
+
+                <div class="preview-panel" id="preview-panel">
+                    <div class="preview-placeholder" id="preview-placeholder">
+                        <div class="preview-placeholder-icon">🖼</div>
+                        <p>Noch keine Vorschau vorhanden</p>
+                    </div>
+
+                    <img id="image-preview" src="" alt="Vorschau" class="image-preview">
+                </div>
+            </div>
+
+            <div class="upload-fields-card">
+                <div class="form-field-group">
+                    <label for="{{ form.title.id_for_label }}">Titel</label>
+                    {{ form.title }}
+                </div>
+
+                <div class="form-field-group">
+                    <label for="{{ form.description.id_for_label }}">Beschreibung</label>
+                    {{ form.description }}
+                </div>
+            </div>
+
+            <button type="submit" class="primary-button">Bild hochladen</button>
+        </form>
+    </section>
+
+    <script>
+        const fileInput = document.getElementById('id_image');
+        const dropzone = document.getElementById('custom-dropzone');
+        const previewImage = document.getElementById('image-preview');
+        const previewPlaceholder = document.getElementById('preview-placeholder');
+
+        function showPreview(file) {
+            if (!file || !file.type.startsWith('image/')) {
+                previewImage.src = '';
+                previewImage.classList.remove('visible');
+                previewPlaceholder.style.display = 'flex';
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                previewImage.src = event.target.result;
+                previewImage.classList.add('visible');
+                previewPlaceholder.style.display = 'none';
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            showPreview(file);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                dropzone.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                dropzone.classList.remove('dragover');
+            });
+        });
+
+        dropzone.addEventListener('drop', function(event) {
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                showPreview(files[0]);
+            }
+        });
+    </script>
+{% endblock %}

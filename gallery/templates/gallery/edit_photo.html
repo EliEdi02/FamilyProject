@@ -1,0 +1,22 @@
+{% extends 'gallery/base.html' %}
+
+{% block title %}Bild bearbeiten - Family Cloud{% endblock %}
+
+{% block content %}
+    <a class="back-link" href="{% url 'photo_detail' photo.id %}">← Zurück zum Bild</a>
+
+    <section class="form-page-card">
+        <div class="section-header">
+            <div>
+                <p class="section-kicker">Bildverwaltung</p>
+                <h1>Bild bearbeiten</h1>
+            </div>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="modern-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="primary-button">Änderungen speichern</button>
+        </form>
+    </section>
+{% endblock %}

@@ -1,0 +1,206 @@
+{% extends 'gallery/base.html' %}
+
+{% block title %}Startseite - Family Cloud{% endblock %}
+
+{% block content %}
+    <section class="hero-card premium-hero">
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+
+        <div class="hero-grid">
+            <div class="hero-content">
+                <span class="hero-label">Private Familiengalerie</span>
+                <h1>Erinnerungen gemeinsam sammeln, anschauen und bewahren</h1>
+                <p>
+                    Unsere eigene geschützte Familienplattform für Bilder, Kommentare
+                    und besondere Momente.
+                </p>
+
+                {% if user.is_authenticated %}
+                    <div class="hero-actions">
+                        <a href="{% url 'upload_photo' %}" class="primary-button">Neues Bild hochladen</a>
+                        <a href="#gallery-section" class="secondary-button">Zur Galerie</a>
+                    </div>
+                {% else %}
+                    <div class="hero-actions">
+                        <a href="{% url 'login' %}" class="primary-button">Einloggen</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="hero-side-panel">
+                <div class="stat-card">
+                    <span class="stat-label">Angezeigte Bilder</span>
+                    <strong>{{ page_obj.paginator.count }}</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-label">Seite</span>
+                    <strong>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-label">Zugriff</span>
+                    <strong>Nur Familie</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-header" id="gallery-section">
+        <div>
+            <p class="section-kicker">Galerie</p>
+            <h2>Neueste Bilder</h2>
+        </div>
+    </section>
+
+    <section class="search-panel">
+        <form method="get" class="search-form">
+            <input
+                type="text"
+                name="q"
+                value="{{ query }}"
+                placeholder="Suche nach Titel, Beschreibung oder Benutzername ..."
+            >
+            <button type="submit" class="primary-button">Suchen</button>
+
+            {% if query %}
+                <a href="{% url 'home' %}" class="secondary-button">Suche zurücksetzen</a>
+            {% endif %}
+        </form>
+    </section>
+
+    <div class="photo-grid premium-grid">
+        {% for photo in photos %}
+            <article class="photo-card premium-photo-card">
+                <a href="{% url 'photo_detail' photo.id %}" class="photo-image-wrap premium-image-wrap">
+                    <img src="{{ photo.image.url }}" alt="{{ photo.title }}">
+                    <div class="image-overlay">
+                        <span class="overlay-chip">Details ansehen</span>
+                    </div>
+                </a>
+
+                <div class="photo-card-body">
+                    <div class="photo-card-top">
+                        <h3>
+                            <a href="{% url 'photo_detail' photo.id %}">{{ photo.title }}</a>
+                        </h3>
+                    </div>
+
+                    <div class="photo-meta">
+                        <span>Von {{ photo.uploaded_by.username }}</span>
+                        <span>{{ photo.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+
+                    {% if photo.description %}
+                        <p class="photo-description">{{ photo.description|truncatechars:110 }}</p>
+                    {% else %}
+                        <p class="photo-description muted">Kein Beschreibungstext vorhanden.</p>
+                    {% endif %}
+
+                    <div class="photo-card-footer">
+                        <a href="{% url 'photo_detail' photo.id %}" class="card-link">Details ansehen</a>
+                        <button
+                            type="button"
+                            class="lightbox-trigger"
+                            data-image-url="{{ photo.image.url }}"
+                            data-image-title="{{ photo.title|escape }}"
+                        >
+                            Schnellansicht
+                        </button>
+                    </div>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <h3>Keine Bilder gefunden</h3>
+                <p>
+                    {% if query %}
+                        Für deine Suche wurden keine passenden Bilder gefunden.
+                    {% else %}
+                        Starte eure gemeinsame Galerie und lade das erste Familienbild hoch.
+                    {% endif %}
+                </p>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'upload_photo' %}" class="primary-button">Bild hochladen</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="primary-button">Einloggen</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+        <section class="pagination-wrap">
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a class="secondary-button" href="?{% if query %}q={{ query }}&{% endif %}page=1">« Erste</a>
+                    <a class="secondary-button" href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.previous_page_number }}">‹ Zurück</a>
+                {% endif %}
+
+                <span class="pagination-info">
+                    Seite {{ page_obj.number }} von {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a class="secondary-button" href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.next_page_number }}">Weiter ›</a>
+                    <a class="secondary-button" href="?{% if query %}q={{ query }}&{% endif %}page={{ page_obj.paginator.num_pages }}">Letzte »</a>
+                {% endif %}
+            </div>
+        </section>
+    {% endif %}
+
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-backdrop" data-close-lightbox="true"></div>
+
+        <div class="lightbox-content">
+            <button type="button" class="lightbox-close" id="lightbox-close">×</button>
+            <img id="lightbox-image" src="" alt="">
+            <p id="lightbox-title"></p>
+        </div>
+    </div>
+
+    <script>
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const lightboxTitle = document.getElementById('lightbox-title');
+        const closeButton = document.getElementById('lightbox-close');
+        const triggers = document.querySelectorAll('.lightbox-trigger');
+
+        triggers.forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const imageUrl = trigger.dataset.imageUrl;
+                const imageTitle = trigger.dataset.imageTitle;
+
+                lightboxImage.src = imageUrl;
+                lightboxImage.alt = imageTitle;
+                lightboxTitle.textContent = imageTitle;
+                lightbox.classList.add('active');
+                document.body.classList.add('lightbox-open');
+            });
+        });
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            lightboxImage.src = '';
+            lightboxImage.alt = '';
+            lightboxTitle.textContent = '';
+            document.body.classList.remove('lightbox-open');
+        }
+
+        closeButton.addEventListener('click', closeLightbox);
+
+        lightbox.addEventListener('click', (event) => {
+            if (event.target.dataset.closeLightbox === 'true') {
+                closeLightbox();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && lightbox.classList.contains('active')) {
+                closeLightbox();
+            }
+        });
+    </script>
+{% endblock %}

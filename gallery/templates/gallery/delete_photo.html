@@ -1,0 +1,26 @@
+{% extends 'gallery/base.html' %}
+
+{% block title %}Bild löschen - Family Cloud{% endblock %}
+
+{% block content %}
+    <a class="back-link" href="{% url 'photo_detail' photo.id %}">← Zurück zum Bild</a>
+
+    <section class="form-page-card danger-card">
+        <div class="section-header">
+            <div>
+                <p class="section-kicker">Achtung</p>
+                <h1>Bild löschen</h1>
+            </div>
+        </div>
+
+        <p class="page-intro">
+            Möchtest du das Bild <strong>{{ photo.title }}</strong> wirklich löschen?
+            Diese Aktion kann nicht rückgängig gemacht werden.
+        </p>
+
+        <form method="post" class="modern-form">
+            {% csrf_token %}
+            <button type="submit" class="danger-button">Ja, Bild löschen</button>
+        </form>
+    </section>
+{% endblock %}

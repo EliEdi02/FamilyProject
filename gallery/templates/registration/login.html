@@ -1,0 +1,31 @@
+{% extends 'gallery/base.html' %}
+
+{% block title %}Login - Family Cloud{% endblock %}
+
+{% block content %}
+    <section class="auth-layout">
+        <div class="auth-card premium-auth-card">
+            <div class="auth-glow"></div>
+
+            <p class="section-kicker">Willkommen zurück</p>
+            <h1>Login</h1>
+
+            <p class="page-intro">
+                Melde dich an, um Bilder hochzuladen, Kommentare zu schreiben,
+                Bilder herunterzuladen und eure gemeinsamen Erinnerungen zu verwalten.
+            </p>
+
+            {% if form.errors %}
+                <div class="message error">
+                    Benutzername oder Passwort ist falsch.
+                </div>
+            {% endif %}
+
+            <form method="post" class="modern-form enhanced-form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="primary-button">Einloggen</button>
+            </form>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'gallery/base.html' %}
+
+{% block title %}Spiel beenden - Tic-Tac-Toe{% endblock %}
+
+{% block content %}
+    <a class="back-link" href="{% url 'tic_tac_toe_detail' game.id %}">← Zurück zum Spiel</a>
+
+    <section class="form-page-card">
+        <div class="section-header">
+            <div>
+                <p class="section-kicker">Tic-Tac-Toe</p>
+                <h1>Spiel beenden</h1>
+            </div>
+        </div>
+
+        <p class="page-intro">
+            Möchtest du dieses Spiel wirklich vorzeitig beenden?
+            Das Spiel wird dann als beendet markiert.
+        </p>
+
+        <form method="post" class="modern-form">
+            {% csrf_token %}
+            <button type="submit" class="secondary-button">Ja, Spiel beenden</button>
+        </form>
+    </section>
+{% endblock %}

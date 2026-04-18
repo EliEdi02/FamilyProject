@@ -1,0 +1,27 @@
+{% extends 'gallery/base.html' %}
+
+{% block title %}Kommentar löschen - Family Cloud{% endblock %}
+
+{% block content %}
+    <a class="back-link" href="{% url 'photo_detail' comment.photo.id %}">← Zurück zum Bild</a>
+
+    <section class="form-page-card danger-card">
+        <div class="section-header">
+            <div>
+                <p class="section-kicker">Achtung</p>
+                <h1>Kommentar löschen</h1>
+            </div>
+        </div>
+
+        <div class="comment-box">
+            <strong>{{ comment.author.username }}</strong>
+            <p class="comment-text">{{ comment.text }}</p>
+            <p class="comment-date">{{ comment.created_at|date:"d.m.Y H:i" }}</p>
+        </div>
+
+        <form method="post" class="modern-form">
+            {% csrf_token %}
+            <button type="submit" class="danger-button">Ja, Kommentar löschen</button>
+        </form>
+    </section>
+{% endblock %}

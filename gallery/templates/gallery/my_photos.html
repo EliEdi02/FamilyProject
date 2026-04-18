@@ -1,0 +1,96 @@
+{% extends 'gallery/base.html' %}
+
+{% block title %}Meine Bilder - Family Cloud{% endblock %}
+
+{% block content %}
+    <section class="hero-card premium-hero small-hero">
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+
+        <div class="hero-grid">
+            <div class="hero-content">
+                <span class="hero-label">Persönlicher Bereich</span>
+                <h1>Meine Bilder</h1>
+                <p>
+                    Hier findest du alle Bilder, die du selbst hochgeladen hast.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="{% url 'upload_photo' %}" class="primary-button">Neues Bild hochladen</a>
+                    <a href="{% url 'home' %}" class="secondary-button">Zur Gesamtgalerie</a>
+                </div>
+            </div>
+
+            <div class="hero-side-panel">
+                <div class="stat-card">
+                    <span class="stat-label">Meine Bilder</span>
+                    <strong>{{ page_obj.paginator.count }}</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-label">Seite</span>
+                    <strong>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="photo-grid premium-grid">
+        {% for photo in photos %}
+            <article class="photo-card premium-photo-card">
+                <a href="{% url 'photo_detail' photo.id %}" class="photo-image-wrap premium-image-wrap">
+                    <img src="{{ photo.image.url }}" alt="{{ photo.title }}">
+                    <div class="image-overlay">
+                        <span class="overlay-chip">Details ansehen</span>
+                    </div>
+                </a>
+
+                <div class="photo-card-body">
+                    <h3>
+                        <a href="{% url 'photo_detail' photo.id %}">{{ photo.title }}</a>
+                    </h3>
+
+                    <div class="photo-meta">
+                        <span>{{ photo.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+
+                    {% if photo.description %}
+                        <p class="photo-description">{{ photo.description|truncatechars:110 }}</p>
+                    {% else %}
+                        <p class="photo-description muted">Kein Beschreibungstext vorhanden.</p>
+                    {% endif %}
+
+                    <div class="photo-card-footer">
+                        <a href="{% url 'photo_detail' photo.id %}" class="card-link">Details ansehen</a>
+                    </div>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <h3>Du hast noch keine Bilder hochgeladen</h3>
+                <p>Starte mit deinem ersten Upload.</p>
+                <a href="{% url 'upload_photo' %}" class="primary-button">Erstes Bild hochladen</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+        <section class="pagination-wrap">
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a class="secondary-button" href="?page=1">« Erste</a>
+                    <a class="secondary-button" href="?page={{ page_obj.previous_page_number }}">‹ Zurück</a>
+                {% endif %}
+
+                <span class="pagination-info">
+                    Seite {{ page_obj.number }} von {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a class="secondary-button" href="?page={{ page_obj.next_page_number }}">Weiter ›</a>
+                    <a class="secondary-button" href="?page={{ page_obj.paginator.num_pages }}">Letzte »</a>
+                {% endif %}
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}

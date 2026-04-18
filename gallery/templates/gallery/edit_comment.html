@@ -1,0 +1,22 @@
+{% extends 'gallery/base.html' %}
+
+{% block title %}Kommentar bearbeiten - Family Cloud{% endblock %}
+
+{% block content %}
+    <a class="back-link" href="{% url 'photo_detail' comment.photo.id %}">← Zurück zum Bild</a>
+
+    <section class="form-page-card">
+        <div class="section-header">
+            <div>
+                <p class="section-kicker">Kommentar</p>
+                <h1>Kommentar bearbeiten</h1>
+            </div>
+        </div>
+
+        <form method="post" class="modern-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="primary-button">Änderungen speichern</button>
+        </form>
+    </section>
+{% endblock %}

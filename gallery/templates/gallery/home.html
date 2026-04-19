@@ -47,7 +47,7 @@
         </div>
     </section>
 
-    <section class="content-panel">
+    <section class="content-panel community-panel">
         <div class="section-header">
             <div>
                 <p class="section-kicker">Community</p>
@@ -55,14 +55,17 @@
             </div>
         </div>
 
-        <div class="user-chip-list">
+        <div class="community-grid">
             {% for active_user in active_users %}
-                <a href="{% url 'user_profile' active_user.username %}" class="user-chip">
-                    <span class="user-chip-avatar">{{ active_user.username|slice:":1"|upper }}</span>
-                    <span class="user-chip-text">
+                <a href="{% url 'user_profile' active_user.username %}" class="community-card">
+                    <div class="community-card-avatar">
+                        {{ active_user.username|slice:":1"|upper }}
+                    </div>
+
+                    <div class="community-card-content">
                         <strong>{{ active_user.username }}</strong>
-                        <small>{{ active_user.photo_count }} Bilder</small>
-                    </span>
+                        <span>{{ active_user.photo_count }} Bilder</span>
+                    </div>
                 </a>
             {% empty %}
                 <div class="empty-state small">

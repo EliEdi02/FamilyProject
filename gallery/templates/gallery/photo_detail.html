@@ -40,7 +40,73 @@
         </div>
     </section>
 
-    <!-- Weitere Bilder -->
+    <section class="content-panel">
+        <div class="section-header">
+            <div>
+                <p class="section-kicker">Mitmachen</p>
+                <h2>Kommentar schreiben</h2>
+            </div>
+        </div>
+
+        {% if user.is_authenticated %}
+            <form method="post" class="modern-form enhanced-form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="primary-button">Kommentar absenden</button>
+            </form>
+        {% else %}
+            <div class="empty-state small">
+                <h3>Login erforderlich</h3>
+                <p>Du musst eingeloggt sein, um einen Kommentar zu schreiben.</p>
+                <a href="{% url 'login' %}" class="primary-button">Zum Login</a>
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="content-panel">
+        <div class="section-header">
+            <div>
+                <p class="section-kicker">Austausch</p>
+                <h2>Kommentare</h2>
+            </div>
+        </div>
+
+        <div class="comments-list">
+            {% for comment in comments %}
+                <article class="comment-box premium-comment-box">
+                    <div class="comment-layout">
+                        <div class="comment-avatar">
+                            {{ comment.author.username|slice:":1"|upper }}
+                        </div>
+
+                        <div class="comment-main">
+                            <div class="comment-top">
+                                <div>
+                                    <strong>{{ comment.author.username }}</strong>
+                                    <p class="comment-date">{{ comment.created_at|date:"d.m.Y H:i" }}</p>
+                                </div>
+                            </div>
+
+                            <p class="comment-text">{{ comment.text }}</p>
+
+                            {% if user == comment.author or user.is_superuser %}
+                                <div class="action-links compact-actions">
+                                    <a href="{% url 'edit_comment' comment.id %}" class="card-link">Kommentar bearbeiten</a>
+                                    <a href="{% url 'delete_comment' comment.id %}" class="danger-text-link">Kommentar löschen</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+            {% empty %}
+                <div class="empty-state small">
+                    <h3>Noch keine Kommentare</h3>
+                    <p>Sei die erste Person, die etwas zu diesem Bild schreibt.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
     <section class="content-panel">
         <div class="section-header">
             <div>
@@ -76,40 +142,5 @@
                 </div>
             {% endfor %}
         </div>
-    </section>
-
-    <!-- Kommentare -->
-    <section class="content-panel">
-        <div class="section-header">
-            <div>
-                <p class="section-kicker">Kommentare</p>
-                <h2>Austausch</h2>
-            </div>
-        </div>
-
-        {% for comment in comments %}
-            <div class="comment-box">
-                <strong>{{ comment.author.username }}</strong>
-                <p>{{ comment.text }}</p>
-                <small>{{ comment.created_at }}</small>
-            </div>
-        {% empty %}
-            <p>Keine Kommentare vorhanden.</p>
-        {% endfor %}
-    </section>
-
-    <!-- Kommentar schreiben -->
-    <section class="content-panel">
-        <h3>Kommentar schreiben</h3>
-
-        {% if user.is_authenticated %}
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Absenden</button>
-            </form>
-        {% else %}
-            <p>Du musst eingeloggt sein.</p>
-        {% endif %}
     </section>
 {% endblock %}

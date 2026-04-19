@@ -12,8 +12,8 @@
                 <span class="hero-label">Private Familiengalerie</span>
                 <h1>Erinnerungen gemeinsam sammeln, anschauen und bewahren</h1>
                 <p>
-                    Unsere eigene geschützte Familienplattform für Bilder, Kommentare
-                    und besondere Momente.
+                    Eure eigene geschützte Familienplattform für Bilder, Kommentare
+                    und besondere Momente — modern, privat und direkt in eurem Heimnetz.
                 </p>
 
                 {% if user.is_authenticated %}
@@ -44,6 +44,32 @@
                     <strong>Nur Familie</strong>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <section class="content-panel">
+        <div class="section-header">
+            <div>
+                <p class="section-kicker">Community</p>
+                <h2>Aktive Nutzer</h2>
+            </div>
+        </div>
+
+        <div class="user-chip-list">
+            {% for active_user in active_users %}
+                <a href="{% url 'user_profile' active_user.username %}" class="user-chip">
+                    <span class="user-chip-avatar">{{ active_user.username|slice:":1"|upper }}</span>
+                    <span class="user-chip-text">
+                        <strong>{{ active_user.username }}</strong>
+                        <small>{{ active_user.photo_count }} Bilder</small>
+                    </span>
+                </a>
+            {% empty %}
+                <div class="empty-state small">
+                    <h3>Noch keine aktiven Nutzer</h3>
+                    <p>Sobald Bilder hochgeladen wurden, erscheinen hier Nutzerprofile.</p>
+                </div>
+            {% endfor %}
         </div>
     </section>
 
@@ -88,7 +114,9 @@
                     </div>
 
                     <div class="photo-meta">
-                        <span>Von {{ photo.uploaded_by.username }}</span>
+                        <span>
+                            Von <a href="{% url 'user_profile' photo.uploaded_by.username %}" class="inline-user-link">{{ photo.uploaded_by.username }}</a>
+                        </span>
                         <span>{{ photo.created_at|date:"d.m.Y H:i" }}</span>
                     </div>
 

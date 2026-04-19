@@ -15,7 +15,12 @@
             <h1>{{ photo.title }}</h1>
 
             <div class="detail-meta">
-                <span>Hochgeladen von <strong>{{ photo.uploaded_by.username }}</strong></span>
+                <span>
+                    Hochgeladen von
+                    <strong>
+                        <a href="{% url 'user_profile' photo.uploaded_by.username %}" class="inline-user-link">{{ photo.uploaded_by.username }}</a>
+                    </strong>
+                </span>
                 <span>{{ photo.created_at|date:"d.m.Y H:i" }}</span>
             </div>
 
@@ -82,7 +87,9 @@
                         <div class="comment-main">
                             <div class="comment-top">
                                 <div>
-                                    <strong>{{ comment.author.username }}</strong>
+                                    <strong>
+                                        <a href="{% url 'user_profile' comment.author.username %}" class="inline-user-link">{{ comment.author.username }}</a>
+                                    </strong>
                                     <p class="comment-date">{{ comment.created_at|date:"d.m.Y H:i" }}</p>
                                 </div>
                             </div>
@@ -131,7 +138,9 @@
                         </h3>
 
                         <div class="photo-meta">
-                            <span>Von {{ related.uploaded_by.username }}</span>
+                            <span>
+                                Von <a href="{% url 'user_profile' related.uploaded_by.username %}" class="inline-user-link">{{ related.uploaded_by.username }}</a>
+                            </span>
                             <span>{{ related.created_at|date:"d.m.Y H:i" }}</span>
                         </div>
                     </div>

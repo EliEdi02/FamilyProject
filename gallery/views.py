@@ -2,8 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponseForbidden, FileResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.core.paginator import Paginator
+from django.contrib.auth.models import User
 from .models import Photo, Comment, TicTacToeGame
 from .forms import CommentForm, PhotoForm, TicTacToeCreateForm
 
@@ -24,10 +25,28 @@ def home(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    active_users = User.objects.annotate(photo_count=Count('photo')).filter(photo_count__gt=0).order_by('-photo_count', 'username')[:8]
+
     return render(request, 'gallery/home.html', {
         'photos': page_obj,
         'page_obj': page_obj,
         'query': query,
+        'active_users': active_users,
+    })
+
+
+def user_profile(request, username):
+    profile_user = get_object_or_404(User, username=username)
+    photos = Photo.objects.filter(uploaded_by=profile_user).order_by('-created_at')
+
+    paginator = Paginator(photos, 9)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'gallery/user_profile.html', {
+        'profile_user': profile_user,
+        'photos': page_obj,
+        'page_obj': page_obj,
     })
 
 

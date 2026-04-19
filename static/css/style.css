@@ -1214,3 +1214,68 @@ body.lightbox-open {
         padding: 18px;
     }
 }
+
+.user-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.user-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 18px;
+    text-decoration: none;
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    box-shadow: var(--shadow-md);
+    transition: 0.2s ease;
+}
+
+.user-chip:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.user-chip-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    font-weight: 800;
+    font-size: 1rem;
+    box-shadow: 0 10px 24px rgba(79, 124, 255, 0.22);
+}
+
+.user-chip-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.user-chip-text strong {
+    font-size: 0.95rem;
+    line-height: 1.1;
+}
+
+.user-chip-text small {
+    color: var(--text-soft);
+    font-size: 0.82rem;
+}
+
+.inline-user-link {
+    color: var(--primary-strong);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.inline-user-link:hover {
+    text-decoration: underline;
+}
